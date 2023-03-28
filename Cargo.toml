@@ -1,0 +1,12 @@
+[package]
+name = "cc_license"
+version = "0.1.0"
+authors = ["Javier Arias <javi@openbookpublishers.com>"]
+edition = "2021"
+license = "MIT"
+description = "Creative Commons license parser"
+repository = "https://github.com/thoth-pub/cc-license"
+readme = "README.md"
+
+[dependencies]
+regex = { version = "1" }
