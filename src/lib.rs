@@ -150,9 +150,10 @@ impl From<&License> for Nomenclature {
     }
 }
 
-impl ToString for License {
-    fn to_string(&self) -> String {
-        format!(
+impl std::fmt::Display for License {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
             "Creative Commons {} {} {} license ({}).",
             self.rights_full(),
             self.version,
