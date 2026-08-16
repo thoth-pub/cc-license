@@ -270,31 +270,28 @@ Record the exact commands run and their concise results. Do not report only "tes
 passed". A check that was not run must be reported as not run, never implied to have
 passed.
 
-### 7.1 Known validation gap: clippy fails on current stable
+### 7.1 Stable Clippy compatibility repair
 
-As verified on 2026-08-15 against `develop` @ `db1a4d6`, the clippy gate **fails on
-a current stable toolchain** with a single pre-existing error:
+On 2026-08-15, the previously observed `clippy::to_string_trait_impl` failure was
+repaired on `develop` by replacing the direct `ToString` implementation for
+`License` with `Display`.
 
-```text
-error: direct implementation of `ToString`
-  --> src/lib.rs:153:1
-  = help: prefer implementing `Display` instead
-  = note: `-D clippy::to-string-trait-impl` implied by `-D warnings`
-```
+The repair is tracked in `CTRL-REPO-LIC-LINT-01` (#3) and merged via PR #4.
 
-`cargo test --workspace --verbose` and `cargo fmt --all -- --check` both pass. Only
-the clippy/`lint` gate fails.
+At `develop` @ `2d9b0c798c23a14131edeeb7fd525188500882dd`, the canonical `test`,
+`lint` and `format_check` gates are green.
 
-This is a **toolchain-drift gap**: the lint post-dates the code, and both workflows
-pin `toolchain: stable`, which floats. Because `lint` is a **required check** on
-protected `develop` (section 4.1), this failure blocks merge for any pull request
-until it is resolved.
+Do not treat the historical Clippy failure as a current repository blocker. Future
+failures must be assessed against the exact current source and toolchain rather
+than inferred from this historical incident.
 
-Repairing it is **separate work** requiring its own authorization and write budget,
-since the fix touches `src/lib.rs`. Do not fix it opportunistically inside an
-unrelated task, and do not silence it with a blanket `allow` to make an unrelated PR
-go green. If an unrelated task encounters this failure, report it as a deferred gap
-and return HOLD rather than expanding the source write budget (section 14).
+Note that both workflows pin `toolchain: stable`, which floats, so toolchain drift
+remains a live source of new lint failures. Repairing any such failure is **separate
+work** requiring its own authorization and write budget whenever the fix touches
+`src/lib.rs`. Do not fix one opportunistically inside an unrelated task, and do not
+silence it with a blanket `allow` to make an unrelated PR go green. If an unrelated
+task encounters such a failure, report it as a deferred gap and return HOLD rather
+than expanding the source write budget (section 14).
 
 ## 8. CI, release and publication
 
